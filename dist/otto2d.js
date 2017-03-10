@@ -103,15 +103,15 @@ var Otto2d = (function () {
   };
 
   var Otto2d = function Otto2d(opts) {
+    var area = { size: opts.size * opts.size };
+
     var data = Object.assign({
       rule: 614,
       ends: [-1, 1, -opts.size, opts.size],
       stat: function stat(code, hood, v) {
         return code[v + hood.reduce(mySum) * 2];
       }
-    }, opts, {
-      size: opts.size * opts.size
-    });
+    }, opts, area);
 
     return Otto(data);
   };
