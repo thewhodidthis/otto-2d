@@ -53,9 +53,6 @@ var Otto2d = (function () {
         stat = _Object$assign.stat,
         seed = _Object$assign.seed;
 
-    // Store ruleset
-
-
     var code = parseRule(rule);
 
     // Calculate state
@@ -77,15 +74,12 @@ var Otto2d = (function () {
     // Clipboard, zero filled, need to work out adjustable size part
     var next = new Uint8Array(size);
 
-    // Store results
-    var grid = void 0;
-
     // Seed how on init
     next = next.map(seed);
 
     return function () {
       // Update
-      grid = next;
+      var grid = next;
 
       // Save for later
       next = grid.map(getState);
@@ -104,7 +98,6 @@ var Otto2d = (function () {
 
   var Otto2d = function Otto2d(opts) {
     var area = { size: opts.size * opts.size };
-
     var data = Object.assign({
       rule: 614,
       ends: [-1, 1, -opts.size, opts.size],
