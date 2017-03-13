@@ -24,7 +24,7 @@
     "remote": "thewhodidthis@zazie:www/example/otto/d2"
   },
   "scripts": {
-    "pretest": "rollup -c",
+    "pretest": "npm start",
     "test": "node test",
     "clear": "npm run clear:dist && npm run clear:logs",
     "clear:dist": "rm -rf dist/",
@@ -34,14 +34,13 @@
     "start": "npm run clear && npm run build",
     "docs": "docco -l ivory -e .js index.es",
     "preexample": "npm start",
-    "example": "npm run example:link && npm run example:serve",
-    "example:link": "ln -siv \"$(pwd)/dist/otto2d.min.js\" example/otto2d.js",
+    "example": "npm run example:build && npm run example:serve",
     "example:push": "rsync -avruzLPC --exclude=.DS_Store ./example/ $npm_package_config_remote",
+    "example:build": "rollup -c rollup.example.js",
     "example:serve": "php -S localhost:8000 -t example/",
     "prebuild": "mkdir -p dist/",
-    "build": "rollup -c && rollup -c rollup.config.iife.js",
-    "build:min": "uglifyjs dist/otto2d.js -cm > dist/otto2d.min.js",
-    "postbuild": "npm run build:min",
+    "build": "rollup -c",
+    "postbuild": "uglifyjs dist/otto2d.js -cm > dist/otto2d.min.js",
     "preversion": "npm start"
   },
   "engines": {
@@ -54,6 +53,7 @@
   "devDependencies": {
     "babel-eslint": "latest",
     "babel-preset-es2015": "latest",
+    "babel-plugin-external-helpers": "latest",
     "docco": "github:67656e65726963/docco",
     "eslint": "latest",
     "eslint-plugin-import": "latest",
