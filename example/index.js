@@ -17,7 +17,7 @@ var papa = {
 
 var otto = Otto2d(papa);
 
-var framesN = 22 - 1;
+var framesN = 22;
 var frameId;
 
 var frame = function frame(r) {
