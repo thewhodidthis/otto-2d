@@ -5,7 +5,9 @@ var Otto = require('@thewhodidthis/otto');
 // # Otto 2d
 // Helps create CA grids
 
-var Otto2d = function Otto2d(opts) {
+var Otto2d = function Otto2d() {
+  var opts = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { size: 1 };
+
   var area = { size: opts.size * opts.size };
   var data = Object.assign({
     rule: 614,

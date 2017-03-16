@@ -3,7 +3,7 @@
 
 import Otto from '@thewhodidthis/otto';
 
-const Otto2d = (opts) => {
+const Otto2d = (opts = { size: 1 }) => {
   const area = { size: opts.size * opts.size };
   const data = Object.assign({
     rule: 614,
