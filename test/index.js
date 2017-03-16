@@ -1,6 +1,9 @@
 const test = require('tape');
 const Otto = require('../');
 
+const getOdd = n => (2 * n) + 1;
+const getMid = n => Math.floor(n * 0.5);
+
 // Expected matches
 // https://oeis.org/wiki/Index_to_2D_5-Neighbor_Cellular_Automata
 const lookup = {
@@ -10,11 +13,8 @@ const lookup = {
   942: [1, 5, 9, 21, 29, 41, 53],
 };
 
-const getOdd = n => (2 * n) + 1;
-const getMid = n => Math.floor(n * 0.5);
-
 // Compares with known integer sequence
-test('will compute as expected', (t) => {
+test('will compute', (t) => {
   Object.keys(lookup).forEach((rule) => {
     const series = lookup[rule];
     const total = series.length;
@@ -58,3 +58,11 @@ test('will compute as expected', (t) => {
   t.end();
 });
 
+
+test('will default', (t) => {
+  const otto = Otto();
+  const grid = otto();
+
+  t.ok(grid.length);
+  t.end();
+});
