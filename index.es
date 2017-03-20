@@ -3,15 +3,15 @@
 
 import Otto from '@thewhodidthis/otto';
 
-const Otto2d = (opts = { size: 1 }) => {
-  const area = { size: opts.size * opts.size };
-  const data = Object.assign({
+const Otto2d = (data = { size: 1 }) => {
+  const area = { size: data.size * data.size };
+  const otto = Object.assign({
     rule: 614,
-    ends: [-1, 1, -opts.size, opts.size],
+    ends: [-1, 1, -data.size, data.size],
     stat: (hood, code, flag) => code[flag + (hood.reduce((a, b) => a + b) * 2)],
-  }, opts, area);
+  }, data, area);
 
-  return Otto(data);
+  return Otto(otto);
 };
 
 export default Otto2d;
