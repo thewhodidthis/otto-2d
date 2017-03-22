@@ -2,8 +2,9 @@
 
 var html = document.documentElement;
 
-var label = document.getElementById('label');
-var rules = [1022, 451, 452, 491, 614, 942];
+var white = [478, 486, 494, 614, 942];
+var black = [451, 473, 475, 483, 485, 491, 497];
+var rules = white.concat(black);
 
 var size = 179;
 var seed = Math.floor(Math.random() * rules.length);
@@ -17,23 +18,25 @@ var papa = {
 
 var otto = Otto2d(papa);
 
-var framesN = 22;
+var framesN = 72;
 var frameId;
 
 var frame = function frame(r) {
   var grid = otto();
 
-  for (var j = 0; j < grid.length; j += 1) {
-    var x = j % size;
-    var y = Math.floor(j / size);
+  if (frameId % 4 === 0) {
+    for (var j = 0; j < grid.length; j += 1) {
+      var x = j % size;
+      var y = Math.floor(j / size);
 
-    if (grid[j]) {
-      plot.fillStyle = 'black';
-    } else {
-      plot.fillStyle = 'white';
+      if (grid[j]) {
+        plot.fillStyle = 'black';
+      } else {
+        plot.fillStyle = 'white';
+      }
+
+      plot.fillRect(x, y, 1, 1);
     }
-
-    plot.fillRect(x, y, 1, 1);
   }
 
   if (frameId > framesN) {
@@ -43,13 +46,16 @@ var frame = function frame(r) {
   }
 };
 
-html.className = 'html';
-
 if (window !== window.top) {
   html.className += ' is-iframe';
 }
 
-label.innerHTML = rule;
+var figure = document.getElementById('figure');
+
+figure.setAttribute('data-rule', rule);
+figure.classList.add((black.indexOf(rule) === -1) ? 'white' : 'black');
+
+document.getElementById('label').innerHTML = rule;
 
 window.addEventListener('load', function(e) {
   frameId = window.requestAnimationFrame(frame);
