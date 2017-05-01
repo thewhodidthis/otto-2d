@@ -8,7 +8,6 @@ export default {
     nodeResolve(),
   ],
   format: 'iife',
-  indent: true,
   interop: false,
   moduleName: 'Otto2d',
   dest: 'example/otto2d.js',
