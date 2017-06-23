@@ -1,6 +1,113 @@
+(function () {
 'use strict';
 
-var html = document.documentElement;
+// # Otto
+// Helps deal CAs
+
+// Wrap index round edges
+// http://stackoverflow.com/questions/1082917/mod-of-negative-number-is-melting-my-brain
+var myMod = function myMod(a, b) {
+  return a - b * Math.floor(a / b);
+};
+var zeros = 1024 .toString(2).split('').slice(1).join('');
+var zerosMax = zeros.length;
+
+// Rule to binary convert
+var parseRule = function parseRule(rule) {
+  // Base 2 digits
+  var code = Number(rule).toString(2);
+
+  // No padding past 10
+  var diff = Math.max(zerosMax, zerosMax - code.length);
+
+  // Zero pad ruleset if need be
+  return ('' + zeros + code).substr(diff).split('').reverse();
+};
+
+// Defaults
+var data = {
+  size: 1,
+  rule: 30,
+
+  // How far from center lie the neighbors
+  ends: [-1, 0, 1],
+
+  // Flip middle cell
+  seed: function seed(v, i, view) {
+    return i === Math.floor(view.length * 0.5);
+  },
+
+  // Index based lookup
+  stat: function stat(hood, code) {
+    var flags = hood.join('').toString(2);
+    var stats = parseInt(flags, 2);
+
+    return code[stats];
+  }
+};
+
+// Setup
+var Otto = function Otto(opts) {
+  // Merge options and defaults
+  var _Object$assign = Object.assign({}, data, opts),
+      size = _Object$assign.size,
+      rule = _Object$assign.rule,
+      ends = _Object$assign.ends,
+      stat = _Object$assign.stat,
+      seed = _Object$assign.seed;
+
+  // Rule 90 would be
+  // ```['0', '1', '0', '1', '1', '0', '1']```
+
+
+  var code = parseRule(rule);
+
+  // Calculate state
+  var step = function step(v, i, view) {
+    // Collect neighboring flags
+    var hood = ends.map(function (span) {
+      // The index for each neighbor
+      var site = myMod(span + i, view.length);
+
+      // The state of each neighbor
+      return view[site];
+    });
+
+    return stat(hood, code, v);
+  };
+
+  // Clipboard, zero filled
+  var grid = new Uint8Array(size);
+  var next = seed;
+
+  // Tick
+  return function () {
+    grid = grid.map(next);
+    next = step;
+
+    return grid;
+  };
+};
+
+// # Otto 2d
+// Helps create CA grids
+
+var Otto2d = function Otto2d() {
+  var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { size: 1 };
+
+  var area = { size: data.size * data.size };
+  var otto = Object.assign({
+    rule: 614,
+    ends: [-1, 1, -data.size, data.size],
+    stat: function stat(hood, code, flag) {
+      return code[flag + hood.reduce(function (a, b) {
+        return a + b;
+      }) * 2];
+    }
+  }, data, area);
+
+  return Otto(otto);
+};
 
 var white = [478, 486, 494, 614, 942];
 var black = [451, 473, 475, 483, 485, 491, 497];
@@ -11,17 +118,20 @@ var seed = Math.floor(Math.random() * rules.length);
 var rule = rules[seed];
 
 var plot = document.querySelector('canvas').getContext('2d');
-var papa = {
-  rule: rule,
-  size: size,
-};
+var papa = { rule: rule, size: size };
 
 var otto = Otto2d(papa);
 
-var framesN = 72;
-var frameId;
+var frameId = -1;
 
-var frame = function frame(r) {
+var start = function start(fn) {
+  return window.requestAnimationFrame(fn);
+};
+var pause = function pause(id) {
+  return window.cancelAnimationFrame(id);
+};
+
+var frame = function frame() {
   var grid = otto();
 
   if (frameId % 4 === 0) {
@@ -39,25 +149,22 @@ var frame = function frame(r) {
     }
   }
 
-  if (frameId > framesN) {
-    frameId = window.cancelAnimationFrame(frameId);
-  } else {
-    frameId = window.requestAnimationFrame(frame);
-  }
+  frameId = frameId > 72 ? pause(frameId) : start(frame);
 };
 
 if (window !== window.top) {
-  html.className += ' is-iframe';
+  document.documentElement.className += ' is-iframe';
 }
 
 var figure = document.getElementById('figure');
 
 figure.setAttribute('data-rule', rule);
-figure.classList.add((black.indexOf(rule) === -1) ? 'white' : 'black');
+figure.classList.add(black.indexOf(rule) === -1 ? 'white' : 'black');
 
 document.getElementById('label').innerHTML = rule;
 
-window.addEventListener('load', function(e) {
-  frameId = window.requestAnimationFrame(frame);
-}, false);
+window.addEventListener('load', function () {
+  frameId = start(frame);
+});
 
+}());
