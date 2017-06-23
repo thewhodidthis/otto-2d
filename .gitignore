@@ -1,6 +1,2 @@
-.DS_Store
 *.log
-dist/
-node_modules/
-example/otto2d.js
-
+node_modules
