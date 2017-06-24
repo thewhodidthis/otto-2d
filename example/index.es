@@ -9,24 +9,21 @@ const seed = Math.floor(Math.random() * rules.length);
 const rule = rules[seed];
 
 const plot = document.querySelector('canvas').getContext('2d');
-const papa = { rule, size };
+const otto = Otto2d({ rule, size });
 
-const otto = Otto2d(papa);
+let frames = -1;
 
-let frameId = -1;
-
-const start = fn => window.requestAnimationFrame(fn);
-const pause = id => window.cancelAnimationFrame(id);
-
-const frame = () => {
+const tick = fn => window.requestAnimationFrame(fn);
+const stop = id => window.cancelAnimationFrame(id);
+const draw = () => {
   const grid = otto();
 
-  if (frameId % 4 === 0) {
-    for (let j = 0; j < grid.length; j += 1) {
-      const x = j % size;
-      const y = Math.floor(j / size);
+  if (frames % 4 === 0) {
+    for (let i = 0, total = grid.length; i < total; i += 1) {
+      const x = i % size;
+      const y = Math.floor(i / size);
 
-      if (grid[j]) {
+      if (grid[i]) {
         plot.fillStyle = 'black';
       } else {
         plot.fillStyle = 'white';
@@ -36,21 +33,17 @@ const frame = () => {
     }
   }
 
-  frameId = frameId > 72 ? pause(frameId) : start(frame);
+  frames = frames > 72 ? stop(frames) : tick(draw);
 };
 
 if (window !== window.top) {
   document.documentElement.className += ' is-iframe';
 }
 
-const figure = document.getElementById('figure');
-
-figure.setAttribute('data-rule', rule);
-figure.classList.add((black.indexOf(rule) === -1) ? 'white' : 'black');
-
+plot.canvas.classList.add((black.indexOf(rule) === -1) ? 'white' : 'black');
 document.getElementById('label').innerHTML = rule;
 
 window.addEventListener('load', () => {
-  frameId = start(frame);
+  frames = tick(draw);
 });
 

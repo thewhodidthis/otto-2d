@@ -9,13 +9,14 @@
 var myMod = function myMod(a, b) {
   return a - b * Math.floor(a / b);
 };
-var zeros = 1024 .toString(2).split('').slice(1).join('');
-var zerosMax = zeros.length;
 
 // Rule to binary convert
 var parseRule = function parseRule(rule) {
   // Base 2 digits
   var code = Number(rule).toString(2);
+
+  var zeros = 1024 .toString(2).split('').slice(1).join('');
+  var zerosMax = zeros.length;
 
   // No padding past 10
   var diff = Math.max(zerosMax, zerosMax - code.length);
@@ -24,48 +25,38 @@ var parseRule = function parseRule(rule) {
   return ('' + zeros + code).substr(diff).split('').reverse();
 };
 
-// Defaults
-var data = {
-  size: 1,
-  rule: 30,
-
-  // How far from center lie the neighbors
-  ends: [-1, 0, 1],
-
-  // Flip middle cell
-  seed: function seed(v, i, view) {
-    return i === Math.floor(view.length * 0.5);
-  },
-
-  // Index based lookup
-  stat: function stat(hood, code) {
-    var flags = hood.join('').toString(2);
-    var stats = parseInt(flags, 2);
-
-    return code[stats];
-  }
-};
-
 // Setup
-var Otto = function Otto(opts) {
+var Otto = function Otto(options) {
   // Merge options and defaults
-  var _Object$assign = Object.assign({}, data, opts),
-      size = _Object$assign.size,
-      rule = _Object$assign.rule,
-      ends = _Object$assign.ends,
-      stat = _Object$assign.stat,
-      seed = _Object$assign.seed;
+  var settings = Object.assign({
+    size: 1,
+    rule: 30,
+
+    // How far from center lie the neighbors
+    ends: [-1, 0, 1],
+
+    // Flip middle cell
+    seed: function seed(v, i, view) {
+      return i === Math.floor(view.length * 0.5);
+    },
+
+    // Index based lookup
+    stat: function stat(hood, code) {
+      var flags = hood.join('').toString(2);
+      var stats = parseInt(flags, 2);
+
+      return code[stats];
+    }
+  }, options);
 
   // Rule 90 would be
   // ```['0', '1', '0', '1', '1', '0', '1']```
-
-
-  var code = parseRule(rule);
+  var code = parseRule(settings.rule);
 
   // Calculate state
   var step = function step(v, i, view) {
     // Collect neighboring flags
-    var hood = ends.map(function (span) {
+    var hood = settings.ends.map(function (span) {
       // The index for each neighbor
       var site = myMod(span + i, view.length);
 
@@ -73,12 +64,12 @@ var Otto = function Otto(opts) {
       return view[site];
     });
 
-    return stat(hood, code, v);
+    return settings.stat(hood, code, v);
   };
 
   // Clipboard, zero filled
-  var grid = new Uint8Array(size);
-  var next = seed;
+  var grid = new Uint8Array(settings.size);
+  var next = settings.seed;
 
   // Tick
   return function () {
@@ -92,13 +83,13 @@ var Otto = function Otto(opts) {
 // # Otto 2d
 // Helps create CA grids
 
-var Otto2d = function Otto2d() {
-  var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { size: 1 };
+var Otto2d = function Otto2d(data) {
+  var size = data && data.size || 1;
+  var area = { size: size * size };
 
-  var area = { size: data.size * data.size };
   var otto = Object.assign({
     rule: 614,
-    ends: [-1, 1, -data.size, data.size],
+    ends: [-1, 1, -size, size],
     stat: function stat(hood, code, flag) {
       return code[flag + hood.reduce(function (a, b) {
         return a + b;
@@ -118,28 +109,25 @@ var seed = Math.floor(Math.random() * rules.length);
 var rule = rules[seed];
 
 var plot = document.querySelector('canvas').getContext('2d');
-var papa = { rule: rule, size: size };
+var otto = Otto2d({ rule: rule, size: size });
 
-var otto = Otto2d(papa);
+var frames = -1;
 
-var frameId = -1;
-
-var start = function start(fn) {
+var tick = function tick(fn) {
   return window.requestAnimationFrame(fn);
 };
-var pause = function pause(id) {
+var stop = function stop(id) {
   return window.cancelAnimationFrame(id);
 };
-
-var frame = function frame() {
+var draw = function draw() {
   var grid = otto();
 
-  if (frameId % 4 === 0) {
-    for (var j = 0; j < grid.length; j += 1) {
-      var x = j % size;
-      var y = Math.floor(j / size);
+  if (frames % 4 === 0) {
+    for (var i = 0, total = grid.length; i < total; i += 1) {
+      var x = i % size;
+      var y = Math.floor(i / size);
 
-      if (grid[j]) {
+      if (grid[i]) {
         plot.fillStyle = 'black';
       } else {
         plot.fillStyle = 'white';
@@ -149,22 +137,18 @@ var frame = function frame() {
     }
   }
 
-  frameId = frameId > 72 ? pause(frameId) : start(frame);
+  frames = frames > 72 ? stop(frames) : tick(draw);
 };
 
 if (window !== window.top) {
   document.documentElement.className += ' is-iframe';
 }
 
-var figure = document.getElementById('figure');
-
-figure.setAttribute('data-rule', rule);
-figure.classList.add(black.indexOf(rule) === -1 ? 'white' : 'black');
-
+plot.canvas.classList.add(black.indexOf(rule) === -1 ? 'white' : 'black');
 document.getElementById('label').innerHTML = rule;
 
 window.addEventListener('load', function () {
-  frameId = start(frame);
+  frames = tick(draw);
 });
 
 }());
