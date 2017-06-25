@@ -133,7 +133,7 @@ var draw = function draw() {
         plot.fillStyle = 'white';
       }
 
-      plot.fillRect(x, y, 1, 1);
+      plot.fillRect(x + 160, y + 60, 1, 1);
     }
   }
 
