@@ -9,7 +9,7 @@ var Otto2d = function Otto2d(data) {
   var size = data && data.size || 1;
   var area = { size: size * size };
 
-  var otto = Object.assign({
+  var t0to = Object.assign({
     rule: 614,
     ends: [-1, 1, -size, size],
     stat: function stat(hood, code, flag) {
@@ -19,7 +19,7 @@ var Otto2d = function Otto2d(data) {
     }
   }, data, area);
 
-  return Otto(otto);
+  return Otto(t0to);
 };
 
 module.exports = Otto2d;
