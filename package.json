@@ -1,6 +1,6 @@
 {
   "name": "@thewhodidthis/otto-2d",
-  "version": "0.0.7",
+  "version": "0.0.8",
   "description": "Otto 2d",
   "main": "index.js",
   "module": "index.es",
