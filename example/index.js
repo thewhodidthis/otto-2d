@@ -6,29 +6,27 @@
 
 // Wrap index round edges
 // http://stackoverflow.com/questions/1082917/mod-of-negative-number-is-melting-my-brain
-var myMod = function myMod(a, b) {
-  return a - b * Math.floor(a / b);
-};
+var myMod = function (a, b) { return a - (b * Math.floor(a / b)); };
 
 // Rule to binary convert
-var parseRule = function parseRule(rule) {
+var parseRule = function (rule) {
   // Base 2 digits
   var code = Number(rule).toString(2);
 
-  var zeros = 1024 .toString(2).split('').slice(1).join('');
+  var zeros = (1024).toString(2).split('').slice(1).join('');
   var zerosMax = zeros.length;
 
   // No padding past 10
   var diff = Math.max(zerosMax, zerosMax - code.length);
 
   // Zero pad ruleset if need be
-  return ('' + zeros + code).substr(diff).split('').reverse();
+  return ("" + zeros + code).substr(diff).split('').reverse()
 };
 
 // Maker
-var Otto = function Otto(options) {
+var Otto = function (data) {
   // Merge options and defaults
-  var settings = Object.assign({
+  var t0to = Object.assign({
     size: 1,
     rule: 30,
 
@@ -36,68 +34,62 @@ var Otto = function Otto(options) {
     ends: [-1, 0, 1],
 
     // Flip middle cell
-    seed: function seed(v, i, view) {
-      return i === Math.floor(view.length * 0.5);
-    },
+    seed: function (v, i, view) { return i === Math.floor(view.length * 0.5); },
 
     // Index based lookup
-    stat: function stat(hood, code) {
+    stat: function (hood, code) {
       var flags = hood.join('').toString(2);
       var stats = parseInt(flags, 2);
 
-      return code[stats];
+      return code[stats]
     }
-  }, options);
+  }, data);
 
   // Rule 90 would be
   // ```['0', '1', '0', '1', '1', '0', '1']```
-  var code = parseRule(settings.rule);
+  var code = parseRule(t0to.rule);
 
   // Calculate state
-  var step = function step(v, i, view) {
+  var step = function (v, i, view) {
     // Collect neighboring flags
-    var hood = settings.ends.map(function (span) {
+    var hood = t0to.ends.map(function (span) {
       // The index for each neighbor
       var site = myMod(span + i, view.length);
 
       // The state of each neighbor
-      return view[site];
+      return view[site]
     });
 
-    return settings.stat(hood, code, v);
+    return t0to.stat(hood, code, v)
   };
 
   // Clipboard, zero filled
-  var grid = new Uint8Array(settings.size);
-  var next = settings.seed;
+  var grid = new Uint8Array(t0to.size);
+  var next = t0to.seed;
 
   // Tick
   return function () {
     grid = grid.map(next);
     next = step;
 
-    return grid;
-  };
+    return grid
+  }
 };
 
 // # Otto 2d
 // Helps create CA grids
 
-var Otto2d = function Otto2d(data) {
-  var size = data && data.size || 1;
+var Otto2d = function (data) {
+  var size = (data && data.size) || 1;
   var area = { size: size * size };
 
   var t0to = Object.assign({
     rule: 614,
     ends: [-1, 1, -size, size],
-    stat: function stat(hood, code, flag) {
-      return code[flag + hood.reduce(function (a, b) {
-        return a + b;
-      }) * 2];
-    }
+    stat: function (hood, code, flag) { return code[flag + (hood.reduce(function (a, b) { return a + b; }) * 2)]; }
   }, data, area);
 
-  return Otto(t0to);
+  return Otto(t0to)
 };
 
 var white = [478, 486, 494, 614, 942];
@@ -113,13 +105,9 @@ var otto = Otto2d({ rule: rule, size: size });
 
 var frames = -1;
 
-var tick = function tick(fn) {
-  return window.requestAnimationFrame(fn);
-};
-var stop = function stop(id) {
-  return window.cancelAnimationFrame(id);
-};
-var draw = function draw() {
+var tick = function (fn) { return window.requestAnimationFrame(fn); };
+var stop = function (id) { return window.cancelAnimationFrame(id); };
+var draw = function () {
   var grid = otto();
 
   if (frames % 4 === 0) {
@@ -144,7 +132,7 @@ if (window !== window.top) {
   document.documentElement.className += ' is-iframe';
 }
 
-plot.canvas.classList.add(black.indexOf(rule) === -1 ? 'white' : 'black');
+plot.canvas.classList.add((black.indexOf(rule) === -1) ? 'white' : 'black');
 document.getElementById('label').innerHTML = rule;
 
 window.addEventListener('load', function () {
@@ -152,3 +140,4 @@ window.addEventListener('load', function () {
 });
 
 }());
+
