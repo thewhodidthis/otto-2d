@@ -1,4 +1,4 @@
-import Otto2d from '../index.es'
+import Otto2d from '../index.mjs'
 
 const white = [478, 486, 494, 614, 942]
 const black = [451, 473, 475, 483, 485, 491, 497]
