@@ -1,9 +1,9 @@
 // # Otto 2d
 // Helps create CA grids
 
-import Otto from '@thewhodidthis/otto'
+import otto from '@thewhodidthis/otto'
 
-const Otto2d = (data) => {
+const otto2d = (data) => {
   const size = (data && data.size) || 1
   const area = { size: size * size }
 
@@ -13,7 +13,7 @@ const Otto2d = (data) => {
     stat: (hood, code, flag) => code[flag + (hood.reduce((a, b) => a + b) * 2)]
   }, data, area)
 
-  return Otto(t0to)
+  return otto(t0to)
 }
 
-export default Otto2d
+export default otto2d
