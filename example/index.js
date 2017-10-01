@@ -23,8 +23,8 @@ var parseRule = function (rule) {
   return ("" + zeros + code).substr(diff).split('').reverse()
 };
 
-// Maker
-var Otto = function (data) {
+// Grid maker
+var otto = function (data) {
   // Merge options and defaults
   var t0to = Object.assign({
     size: 1,
@@ -79,7 +79,7 @@ var Otto = function (data) {
 // # Otto 2d
 // Helps create CA grids
 
-var Otto2d = function (data) {
+var otto2d$1 = function (data) {
   var size = (data && data.size) || 1;
   var area = { size: size * size };
 
@@ -89,7 +89,7 @@ var Otto2d = function (data) {
     stat: function (hood, code, flag) { return code[flag + (hood.reduce(function (a, b) { return a + b; }) * 2)]; }
   }, data, area);
 
-  return Otto(t0to)
+  return otto(t0to)
 };
 
 var white = [478, 486, 494, 614, 942];
@@ -101,21 +101,22 @@ var seed = Math.floor(Math.random() * rules.length);
 var rule = rules[seed];
 
 var plot = document.querySelector('canvas').getContext('2d');
-var otto = Otto2d({ rule: rule, size: size });
+var grid = otto2d$1({ rule: rule, size: size });
 
 var frames = -1;
 
 var tick = function (fn) { return window.requestAnimationFrame(fn); };
 var stop = function (id) { return window.cancelAnimationFrame(id); };
+
 var draw = function () {
-  var grid = otto();
+  var data = grid();
 
   if (frames % 4 === 0) {
-    for (var i = 0, total = grid.length; i < total; i += 1) {
+    for (var i = 0, total = data.length; i < total; i += 1) {
       var x = i % size;
       var y = Math.floor(i / size);
 
-      if (grid[i]) {
+      if (data[i]) {
         plot.fillStyle = 'black';
       } else {
         plot.fillStyle = 'white';
@@ -128,12 +129,13 @@ var draw = function () {
   frames = frames > 72 ? stop(frames) : tick(draw);
 };
 
+plot.canvas.classList.add((black.indexOf(rule) === -1) ? 'white' : 'black');
+
+document.getElementById('label').innerHTML = rule;
+
 if (window !== window.top) {
   document.documentElement.className += ' is-iframe';
 }
-
-plot.canvas.classList.add((black.indexOf(rule) === -1) ? 'white' : 'black');
-document.getElementById('label').innerHTML = rule;
 
 window.addEventListener('load', function () {
   frames = tick(draw);
