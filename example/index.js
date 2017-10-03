@@ -2,7 +2,7 @@
 'use strict';
 
 // # Otto
-// Helps deal CAs
+// Helps create elementary Cellular Automata
 
 // Wrap index round edges
 // http://stackoverflow.com/questions/1082917/mod-of-negative-number-is-melting-my-brain
@@ -23,10 +23,10 @@ var parseRule = function (rule) {
   return ("" + zeros + code).substr(diff).split('').reverse()
 };
 
-// Grid maker
+// Master grid maker
 var otto = function (data) {
   // Merge options and defaults
-  var t0to = Object.assign({
+  var papa = Object.assign({
     size: 1,
     rule: 30,
 
@@ -47,12 +47,12 @@ var otto = function (data) {
 
   // Rule 90 would be
   // ```['0', '1', '0', '1', '1', '0', '1']```
-  var code = parseRule(t0to.rule);
+  var code = parseRule(papa.rule);
 
   // Calculate state
   var step = function (v, i, view) {
     // Collect neighboring flags
-    var hood = t0to.ends.map(function (span) {
+    var hood = papa.ends.map(function (span) {
       // The index for each neighbor
       var site = myMod(span + i, view.length);
 
@@ -60,12 +60,12 @@ var otto = function (data) {
       return view[site]
     });
 
-    return t0to.stat(hood, code, v)
+    return papa.stat(hood, code, v)
   };
 
   // Clipboard, zero filled
-  var grid = new Uint8Array(t0to.size);
-  var next = t0to.seed;
+  var grid = new Uint8Array(papa.size);
+  var next = papa.seed;
 
   // Tick
   return function () {
@@ -79,17 +79,17 @@ var otto = function (data) {
 // # Otto 2d
 // Helps create CA grids
 
-var otto2d$1 = function (data) {
-  var size = (data && data.size) || 1;
-  var area = { size: size * size };
+var otto2d = function (from) {
+  var size = (from && from.size) || 1;
+  var grid = { size: size * size };
 
-  var t0to = Object.assign({
+  var data = Object.assign({
     rule: 614,
     ends: [-1, 1, -size, size],
     stat: function (hood, code, flag) { return code[flag + (hood.reduce(function (a, b) { return a + b; }) * 2)]; }
-  }, data, area);
+  }, from, grid);
 
-  return otto(t0to)
+  return otto(data)
 };
 
 var white = [478, 486, 494, 614, 942];
@@ -101,7 +101,7 @@ var seed = Math.floor(Math.random() * rules.length);
 var rule = rules[seed];
 
 var plot = document.querySelector('canvas').getContext('2d');
-var grid = otto2d$1({ rule: rule, size: size });
+var grid = otto2d({ rule: rule, size: size });
 
 var frames = -1;
 

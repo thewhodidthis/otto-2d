@@ -1,4 +1,4 @@
-import calculate from '../index.mjs'
+import otto2d from '../index.mjs'
 
 const white = [478, 486, 494, 614, 942]
 const black = [451, 473, 475, 483, 485, 491, 497]
@@ -9,7 +9,7 @@ const seed = Math.floor(Math.random() * rules.length)
 const rule = rules[seed]
 
 const plot = document.querySelector('canvas').getContext('2d')
-const grid = calculate({ rule, size })
+const grid = otto2d({ rule, size })
 
 let frames = -1
 
