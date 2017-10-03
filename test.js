@@ -1,7 +1,7 @@
 'use strict'
 
 const test = require('tape')
-const calculator = require('./')
+const otto = require('./')
 
 const getOdd = n => (2 * n) + 1
 const getMid = n => Math.floor(n * 0.5)
@@ -26,10 +26,10 @@ test('will compute', (t) => {
     const data = []
 
     // Setup 2d 5-neighbor CA
-    const calc = calculator({ rule, size })
+    const next = otto({ rule, size })
 
     for (let i = 0; i < total; i += 1) {
-      const grid = calc()
+      const grid = next()
 
       const rangeR = getOdd(i)
       const rangeL = getMid(size - rangeR)
@@ -61,8 +61,8 @@ test('will compute', (t) => {
 })
 
 test('will default', (t) => {
-  const calc = calculator()
-  const grid = calc()
+  const next = otto()
+  const grid = next()
 
   t.ok(grid.length)
   t.end()
