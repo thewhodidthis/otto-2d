@@ -3,17 +3,17 @@
 
 import otto from '@thewhodidthis/otto'
 
-const otto2d = (data) => {
-  const size = (data && data.size) || 1
-  const area = { size: size * size }
+const otto2d = (from) => {
+  const size = (from && from.size) || 1
+  const grid = { size: size * size }
 
-  const t0to = Object.assign({
+  const data = Object.assign({
     rule: 614,
     ends: [-1, 1, -size, size],
     stat: (hood, code, flag) => code[flag + (hood.reduce((a, b) => a + b) * 2)]
-  }, data, area)
+  }, from, grid)
 
-  return otto(t0to)
+  return otto(data)
 }
 
 export default otto2d
