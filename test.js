@@ -61,4 +61,4 @@ Object.keys(lookup).forEach((rule, j) => {
 const next = otto()
 const grid = next()
 
-ok(grid.length, 'size is a match', 'will default')
+ok(grid.length, 'grid size is a match', 'will default')
