@@ -1,6 +1,6 @@
 'use strict'
 
-const test = require('tape')
+const { ok, deepEqual } = require('tapeless')
 const otto = require('./')
 
 const getOdd = n => (2 * n) + 1
@@ -16,54 +16,49 @@ const lookup = {
 }
 
 // Compares with known integer sequence
-test('will compute', (t) => {
-  Object.keys(lookup).forEach((rule) => {
-    const series = lookup[rule]
-    const total = series.length
-    const size = (7 * 2) - 1
+Object.keys(lookup).forEach((rule, j) => {
+  const series = lookup[rule]
+  const size = (7 * 2) - 1
 
-    // For collecting on cell counts
-    const data = []
+  // For collecting on cell counts
+  const data = []
 
-    // Setup 2d 5-neighbor CA
-    const next = otto({ rule, size })
+  // Setup 2d 5-neighbor CA
+  const next = otto({ rule, size })
 
-    for (let i = 0; i < total; i += 1) {
-      const grid = next()
+  for (let i = 0, { length } = series; i < length; i += 1) {
+    const grid = next()
 
-      const rangeR = getOdd(i)
-      const rangeL = getMid(size - rangeR)
+    const rangeR = getOdd(i)
+    const rangeL = getMid(size - rangeR)
 
-      const range = rangeL + rangeR
-      const boxes = []
+    const range = rangeL + rangeR
+    const boxes = []
 
-      for (let j = 0; j < size; j += 1) {
-        const start = j * size
-        const chunk = grid.slice(start, start + size)
+    for (let k = 0; k < size; k += 1) {
+      const start = k * size
+      const chunk = grid.slice(start, start + size)
 
-        boxes.push(chunk)
-      }
-
-      const count = boxes.slice(rangeL, range).map((chunk) => {
-        const start = getMid(size - rangeR)
-
-        return chunk.slice(start, start + rangeR)
-      }).reduce((a, b) => [...a, ...b]).filter(v => v === 1).length
-
-      data.push(count)
+      boxes.push(chunk)
     }
 
-    // Compare expected sequence with CA data
-    t.deepEqual(data, series, `Rule ${rule} matches ${series}`)
-  })
+    const { length: count } = boxes.slice(rangeL, range).map((chunk) => {
+      const start = getMid(size - rangeR)
 
-  t.end()
+      return chunk.slice(start, start + rangeR)
+    }).reduce((a, b) => [...a, ...b]).filter(v => v === 1)
+
+    data.push(count)
+  }
+
+  // Add test title
+  const head = !j ? 'will compute' : undefined
+
+  // Compare expected sequence with CA data
+  deepEqual(data, series, `Rule ${rule} matches ${series}`, head)
 })
 
-test('will default', (t) => {
-  const next = otto()
-  const grid = next()
+const next = otto()
+const grid = next()
 
-  t.ok(grid.length)
-  t.end()
-})
+ok(grid.length, 'size is a match', 'will default')
