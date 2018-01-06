@@ -5,17 +5,18 @@ var otto = require('@thewhodidthis/otto');
 // # Otto 2d
 // Helps create CA grids
 
-const otto2d = (from) => {
-  const size = (from && from.size) || 1;
-  const grid = { size: size * size };
+var otto2d = function (from) {
+  var size = (from && from.size) || 1;
+  var grid = { size: size * size };
 
-  const data = Object.assign({
+  var data = Object.assign({
     rule: 614,
     ends: [-1, 1, -size, size],
-    stat: (hood, code, flag) => code[flag + (hood.reduce((a, b) => a + b) * 2)]
+    stat: function (hood, code, flag) { return code[flag + (hood.reduce(function (a, b) { return a + b; }) * 2)]; }
   }, from, grid);
 
   return otto(data)
 };
 
 module.exports = otto2d;
+
