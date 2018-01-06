@@ -92,27 +92,60 @@ var otto2d = function (from) {
   return otto(data)
 };
 
-var white = [478, 486, 494, 614, 942];
-var black = [451, 473, 475, 483, 485, 491, 497];
-var rules = white.concat(black);
+var list = [451, 473, 475, 478, 483, 485, 486, 491, 494, 497, 614, 942];
 
-var size = 179;
-var seed = Math.floor(Math.random() * rules.length);
-var rule = rules[seed];
-
-var plot = document.querySelector('canvas').getContext('2d');
-var grid = otto2d({ rule: rule, size: size });
-
-var frames = -1;
+var size = 219;
+var area = size * size;
+var drop = Math.ceil(size * 0.5);
 
 var tick = function (fn) { return window.requestAnimationFrame(fn); };
 var stop = function (id) { return window.cancelAnimationFrame(id); };
 
+var seed = function () {
+  try {
+    var search = new URLSearchParams(window.location.search);
+    var choice = search.get('rule');
+
+    if (choice) {
+      return parseInt(choice, 10)
+    }
+
+    throw Error()
+  } catch (e) {
+    var random = Math.floor(Math.random() * list.length);
+
+    return list[random]
+  }
+};
+
+if (window !== window.top) {
+  document.documentElement.classList.add('is-iframe');
+}
+
+var rule = seed();
+
+var plot = document.querySelector('canvas').getContext('2d');
+var grid = otto2d({ rule: rule, size: size });
+
+var ref = plot.canvas;
+var w = ref.width;
+var h = ref.height;
+
+var l = (w - size + 1) * 0.5;
+var t = (h - size + 1) * 0.5;
+
+var frames = -1;
+
 var draw = function () {
   var data = grid();
 
+  // Do this once
+  if (frames === 4 && data[0]) {
+    plot.canvas.classList.add('black');
+  }
+
   if (frames % 4 === 0) {
-    for (var i = 0, total = data.length; i < total; i += 1) {
+    for (var i = 0; i < area; i += 1) {
       var x = i % size;
       var y = Math.floor(i / size);
 
@@ -122,23 +155,20 @@ var draw = function () {
         plot.fillStyle = 'white';
       }
 
-      plot.fillRect(x + 160, y + 60, 1, 1);
+      plot.fillRect(x + l, y + t, 1, 1);
     }
   }
 
-  frames = frames > 72 ? stop(frames) : tick(draw);
+  frames = frames > drop ? stop(frames) : tick(draw);
 };
 
-plot.canvas.classList.add((black.indexOf(rule) === -1) ? 'white' : 'black');
-
-document.getElementById('label').innerHTML = rule;
-
-if (window !== window.top) {
-  document.documentElement.className += ' is-iframe';
-}
+frames = tick(draw);
 
 window.addEventListener('load', function () {
-  frames = tick(draw);
+  var mark = document.getElementById('label');
+  var note = document.createTextNode(rule);
+
+  mark.replaceChild(note, mark.firstChild);
 });
 
 }());
