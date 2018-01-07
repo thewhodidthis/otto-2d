@@ -55,12 +55,7 @@ const draw = () => {
       const x = i % size
       const y = Math.floor(i / size)
 
-      if (data[i]) {
-        plot.fillStyle = 'black'
-      } else {
-        plot.fillStyle = 'white'
-      }
-
+      plot.fillStyle = data[i] ? 'black' : 'white'
       plot.fillRect(x + l, y + t, 1, 1)
     }
   }

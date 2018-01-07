@@ -149,12 +149,7 @@ var draw = function () {
       var x = i % size;
       var y = Math.floor(i / size);
 
-      if (data[i]) {
-        plot.fillStyle = 'black';
-      } else {
-        plot.fillStyle = 'white';
-      }
-
+      plot.fillStyle = data[i] ? 'black' : 'white';
       plot.fillRect(x + l, y + t, 1, 1);
     }
   }
