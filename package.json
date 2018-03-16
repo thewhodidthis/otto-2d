@@ -1,6 +1,6 @@
 {
   "name": "@thewhodidthis/otto-2d",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Helps create CA grids",
   "main": "index",
   "module": "index.mjs",
