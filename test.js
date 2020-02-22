@@ -55,10 +55,14 @@ Object.keys(lookup).forEach((rule, j) => {
   const head = !j ? 'will compute' : undefined
 
   // Compare expected sequence with CA data
-  deepEqual(data, series, `Rule ${rule} matches ${series}`, head)
+  deepEqual
+    .describe(`Rule ${rule} matches ${series}`, head)
+    .test(data, series)
 })
 
 const next = otto()
 const grid = next()
 
-ok(grid.length, 'grid size is a match', 'will default')
+ok
+  .describe('grid size is a match', 'will default')
+  .test(grid.length)
