@@ -4,10 +4,10 @@ Helps create CA grids.
 
 ## setup
 
-Fetch latest from GitHub:
+Fetch the latest version from GitHub directly:
 
 ```sh
-# Includes ESM and CJS versions
+# Contains ES and CJS modules
 npm i thewhodidthis/otto2d
 ```
 
